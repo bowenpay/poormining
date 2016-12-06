@@ -33,7 +33,7 @@ class RandomForestModel(object):
     def _fetch_data(self):
         """ 获取建模数据 """
         session = get_db_session()
-        objs = session.query(Pinkunhu).filter(Pinkunhu.county == '陆良县').all()
+        objs = session.query(Pinkunhu).filter(Pinkunhu.county == '镇雄县').all()
         X, Y = [], []
         for item in objs:
             col_list = []

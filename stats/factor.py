@@ -1,8 +1,7 @@
 # -*- coding: utf-8 -*-
 from __future__ import unicode_literals
 __author__ = 'yijingping'
-from collections import Counter
-from data.db import get_db_session, ZhenxiongPinkunhu2015, Pinkunhu
+from data.db import get_db_session, Pinkunhu
 import numpy as np
 import pandas as pd
 import matplotlib.pyplot as plt

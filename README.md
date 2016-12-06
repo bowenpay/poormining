@@ -69,7 +69,11 @@ clone代码,安装依赖python库
 
 ## 生成特征图
 
-执行命令 `python stats/factor.py`, 会在 `stats/images/` 下面生成贫困户、已脱贫贫困户、已脱贫占总贫困户比的单因子影响图。
+执行命令 
+
+    $ PYTHONPATH=. python stats/factor.py
+
+会在 `stats/images/` 下面生成贫困户、已脱贫贫困户、已脱贫占总贫困户比的单因子影响图。
 
 如果想添加跟多的因子，请修改 `stats/factor.py` 中 类`PinkunhuCharacter` 的 `run` 方法。 如下所示
 
@@ -83,6 +87,17 @@ class PinkunhuCharacter(object):
 ```
 
 ## 使用随机森林模型预测
+
+执行命令
+
+    $ PYTHONPATH=. python machinelearning/randomforest/model.py
+
+
+会打印出
+
+    Total: 6769, Hit: 5295, Precision: 78.22%
+
+表示对6769个数据进行检测， 命中5295个， 命中率是 78.22%.
 
 ## 使用逻辑回归预测
 

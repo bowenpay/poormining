@@ -2,20 +2,26 @@
 
 # 模块介绍
 
-data： 数据来源。定义访问数据库的schemal 和 获取数据的方法。
+```
+--.
+  ├── data/               数据来源。定义访问数据库的schemal 和 获取数据的方法。
+  ├── machinelearning/    各种机器学习的模型。
+  │   ├── __init__.py
+  │   ├── randomforest
+  │   ├── logistic
+  │   └── svm
+  └── stats/              数据统计
+```
 
-machinglearning： 各种机器学习的模型。 
-
-stats： 数据统计。
 
 # 安装
 
-###### 1）安装python环境 
+##### 1）安装python环境 
 
 检查python的版本，是否为2.7.x，如果不是，安装2.7.6。
 
 
-###### 2）安装依赖包, clone代码
+##### 2）安装依赖包, clone代码
 
 安装Mysql-python依赖
     
@@ -27,7 +33,7 @@ clone代码,安装依赖python库
     $ cd poormining
     $ pip install -r requirements.txt
 
-###### 3) 解决 `matplotlib` 中文乱码问题
+##### 3) 解决 `matplotlib` 中文乱码问题
 
 打开 `<PATH>/site-packages/matplotlib/mpl-data/matplotlibrc` 文件，
 删除 `font.family` 和 `font.sans-serif` 两行前的 `#`，并在 `font.sans-serif` 后添加微软雅黑字体（Microsoft YaHei），代码如下：
@@ -35,7 +41,7 @@ clone代码,安装依赖python库
     font.family         : sans-serif
     font.sans-serif     : Microsoft YaHei, Bitstream Vera Sans, Lucida Grande, Verdana, Geneva, Lucid, Arial, Helvetica, Avant Garde, sans-serif
 
-###### 4) 创建数据库
+##### 4) 创建数据库
 
 使用下面的语句创建数据库
 
@@ -43,7 +49,7 @@ clone代码,安装依赖python库
 
 并将 `./data/*.sql` 文件导入到数据库中
 
-###### 5) 更新配置文件local_settings
+##### 5) 更新配置文件local_settings
 
 在 poormining 目录下,添加 local_settings.py 文件,修改对应的用户名密码，配置如下:
 

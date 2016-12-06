@@ -23,7 +23,7 @@ class PinkunhuCharacter(object):
     """ 贫困户特征
     """
     def run(self):
-        for col in ['member_count', 'is_debt']:
+        for col in ['washing_machine', 'tv', 'fridge']:
             self.stat_col_percent(col)
 
     def plot_col_name(self, data, title):
@@ -58,19 +58,28 @@ class PinkunhuCharacter(object):
     def stat_col_percent(self, col):
         top_num = 10
         session = get_db_session()
-        objs = session.query(getattr(ZhenxiongPinkunhu2015, col))
+        objs = session.query(getattr(Pinkunhu, col)).filter(Pinkunhu.poor_status != '已脱贫')
+        res0 = {}
+        for item in objs:
+            k = (getattr(item, col) or '')[:2]
+            cnt = res0.get(k, 0)
+            res0[k] = cnt + 1
+
+        self.plot_col_name(self.count_to_percent(res0)[:20], title='%s-未脱贫' % col)
+
+        objs = session.query(getattr(Pinkunhu, col))
         res1 = {}
         for item in objs:
-            k = getattr(item, col, 0) or 0
+            k = (getattr(item, col) or '')[:2]
             cnt = res1.get(k, 0)
             res1[k] = cnt + 1
 
-        self.plot_col_name(self.count_to_percent(res1)[:20], title='%s-贫困户' % col)
+        self.plot_col_name(self.count_to_percent(res1)[:20], title='%s-全部' % col)
 
-        objs2 = session.query(getattr(ZhenxiongPinkunhu2015, col)).filter(ZhenxiongPinkunhu2015.poor_status=='已脱贫')
+        objs2 = session.query(getattr(Pinkunhu, col)).filter(Pinkunhu.poor_status=='已脱贫')
         res2 = {}
         for item in objs2:
-            k = getattr(item, col) or 0
+            k = (getattr(item, col) or '')[:2]
             cnt = res2.get(k, 0)
             res2[k] = cnt + 1
 

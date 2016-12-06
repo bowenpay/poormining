@@ -1,80 +1,82 @@
 # -*- coding: utf-8 -*-
-from data.db import get_db_session, ZhenxiongPinkunhu2015, Pinkunhu
+from __future__ import unicode_literals
+from data.db import get_db_session, Pinkunhu
 from sklearn.ensemble import RandomForestClassifier
-import trees
-import treePlotter
+from data.dbaccess import normalize
 
 
 class RandomForestModel(object):
-    """使用随机森林模型"""
+    """使用随机森林模型2"""
 
     def run(self):
         # 获取数据
-        data, labels = self.fetch_data()
-        # 构建决策树
-        my_tree = trees.createTree(data, labels)
-        print my_tree
-        # 绘制决策树
-        # TODO 因为节点过多，暂时不绘制
-        # treePlotter.createPlot(my_tree)
-        # 保存决策树
-        # trees.storeTree(my_tree, 'tree.txt')
-        # my_tree = trees.grabTree('tree.txt')
-        # 用决策树进行预测
-        self.predict(my_tree)
+        X, Y = self._fetch_data()
+        # 构建随机森林模型
+        clf = RandomForestClassifier(n_estimators=10)
+        clf.fit(X, Y)
+        # 测试
+        self.predict(clf)
 
-    def fetch_data(self):
-        """ 获取数据 """
+    def predict(self, clf):
+        """ 用当前的模型预测 """
+        X, Y = self._fetch_test_data()
+        Y2 = clf.predict(X)
+        total, hit = len(Y), 0
+        for idx, v in enumerate(Y2):
+            if Y[idx] == v:
+                hit += 1
+
+        print 'Total: %d, Hit: %d, Precision: %.2f%%' % (total, hit, 100.0*hit/total)
+        # 用 镇雄县 的模型去预测 陆良县 的结果
+        # Total: 6769, Hit: 5295, Precision: 78.22%
+
+    def _fetch_data(self):
+        """ 获取建模数据 """
         session = get_db_session()
-        objs = session.query(ZhenxiongPinkunhu2015).limit(20)
-        labels = [
-           # 'province', 'city', 'county', 'town', 'village', 'group',
-            'last_name', 'has_bank', 'has_phone',
-            'member_count', 'standard', 'reason', 'other_reason',
-        ]
-        data = []
+        objs = session.query(Pinkunhu).filter(Pinkunhu.county == '陆良县').all()
+        X, Y = [], []
         for item in objs:
-            data.append([
-               # item.province, item.city, item.county, item.town, item.village, item.group,
-                item.name[:1], '有银行卡' if item.bank_name else '无银行卡', '有电话' if item.call_number else '无电话',
-                item.member_count, item.standard, item.reason, item.other_reason,
-                item.poor_status
-            ])
-        return data, labels
+            col_list = []
+            for col in [
+                'tv', 'washing_machine', 'fridge',
+                'reason', 'is_danger_house', 'is_back_poor', 'is_danger_house', 'is_debt', 'standard',
+                #'arable_land', 'debt_total', 'living_space', 'member_count', 'person_year_total_income',
+                #'year_total_income', 'subsidy_total', 'wood_land', 'xin_nong_he_total', 'xin_yang_lao_total',
+                'call_number', 'bank_name', 'bank_number', 'help_plan'
+            ]:
 
-    def fetch_test_data(self):
+                normalized_value = normalize(col, getattr(item, col))
+                col_list.append(normalized_value)
+            X.append(col_list)
+            normalized_value = normalize('poor_status', getattr(item, 'poor_status'))
+            Y.append(normalized_value)
+
+        return X, Y
+
+    def _fetch_test_data(self):
         """ 获取测试数据 """
         session = get_db_session()
-        objs = session.query(Pinkunhu).filter(Pinkunhu.county == '陆良县').limit(1000)
-        # objs = session.query(ZhenxiongPinkunhu2015).limit(1000)
-        lables = [
-           #  'province', 'city', 'county', 'town', 'village', 'group',
-            'last_name', 'has_bank', 'has_phone',
-            'member_count', 'standard', 'reason', 'other_reason',
-        ]
-        data = []
+        objs = session.query(Pinkunhu).filter(Pinkunhu.county == '陆良县').all()
+        X, Y = [], []
         for item in objs:
-            data.append([
-               #  item.province, item.city, item.county, item.town, item.village, item.group,
-                item.name[:1], '有银行卡' if item.bank_name else '无银行卡', '有电话' if item.call_number else '无电话',
-                item.member_count, item.standard, item.reason, item.other_reason,
-                item.poor_status
-            ])
-        return data, lables
+            col_list = []
+            for col in [
+                'tv', 'washing_machine', 'fridge',
+                'reason', 'is_danger_house', 'is_back_poor', 'is_danger_house', 'is_debt', 'standard',
+                #'arable_land', 'debt_total', 'living_space', 'member_count', 'person_year_total_income',
+                #'year_total_income', 'subsidy_total', 'wood_land', 'xin_nong_he_total', 'xin_yang_lao_total',
+                'call_number', 'bank_name', 'bank_number', 'help_plan'
+            ]:
 
-    def predict(self, my_tree):
-        total, hit = 0, 0
-        test_data, labels = self.fetch_test_data()
-        for row in test_data:
-            res = trees.classify(my_tree, labels, row[:-1])
-            if res == row[-1]:
-                hit += 1
-            total += 1
+                normalized_value = normalize(col, getattr(item, col))
+                col_list.append(normalized_value)
+            X.append(col_list)
+            normalized_value = normalize('poor_status', getattr(item, 'poor_status'))
+            Y.append(normalized_value)
 
-        print 'Total: %d, Hit: %d, Precision: %.2f' % (total, hit, 100.0*hit/total)
+        return X, Y
 
 
 if __name__ == '__main__':
     m = RandomForestModel()
     m.run()
-

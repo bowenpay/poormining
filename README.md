@@ -170,6 +170,28 @@ class PinkunhuCharacter(object):
 
 并绘制相应结果图。从上面的结果看出，效果和线性回归模型基本一样。
 
+
+## 使用岭回归模型预测下一年人均年收入
+
+操作与展示 同 线性回归模型 一致。执行命令
+
+    $ PYTHONPATH=. python machinelearning/ridge/model.py
+
+会打印出
+
+    Deviation: 0%, Total: 40820, Hit: 0, Precision: 0.00%
+    Deviation: 10%, Total: 40820, Hit: 24418, Precision: 59.82%
+    Deviation: 20%, Total: 40820, Hit: 32936, Precision: 80.69%
+    Deviation: 30%, Total: 40820, Hit: 36211, Precision: 88.71%
+    Deviation: 40%, Total: 40820, Hit: 37367, Precision: 91.54%
+    Deviation: 50%, Total: 40820, Hit: 38041, Precision: 93.19%
+    Deviation: 60%, Total: 40820, Hit: 38502, Precision: 94.32%
+    Deviation: 70%, Total: 40820, Hit: 38816, Precision: 95.09%
+    Deviation: 80%, Total: 40820, Hit: 39071, Precision: 95.72%
+    Deviation: 90%, Total: 40820, Hit: 39282, Precision: 96.23%
+    Deviation: 100%, Total: 40820, Hit: 39432, Precision: 96.60%
+
+并绘制相应结果图。从上面的结果看出，效果和线性回归模型基本一样。
     
 ## 其它
 

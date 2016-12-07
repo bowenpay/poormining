@@ -2,7 +2,7 @@
 from __future__ import unicode_literals
 import json
 from collections import OrderedDict
-from data.db import get_db_session, ZhenxiongPinkunhu2015, Pinkunhu
+from data.db import get_db_session, Pinkunhu2015
 
 MAPPINGS = {
   "tv": {
@@ -16,8 +16,8 @@ MAPPINGS = {
     "null": 3
   },
   "fridge": {
-    "单门": 1,
-    "双门": 2,
+    "双门": 1,
+    "单门": 2,
     "null": 3
   },
   "reason": {
@@ -50,16 +50,16 @@ MAPPINGS = {
     "有": 3
   },
   "poor_status": {
-    "贫困": 1,
-    "已脱贫": 2,
-    "预脱贫": 3,
+    "已脱贫": 1,
+    "预脱贫": 2,
+    "贫困": 3,
     "null": 4
   },
   "standard": {
     "国家标准": 1,
-    "null": 2,
+    "省定标准": 2,
     "市定标准": 3,
-    "省定标准": 4
+    "null": 4
   }
 }
 
@@ -75,7 +75,7 @@ def get_normalize():
                 'poor_status', 'standard']:
         data = OrderedDict()
         idx = 1
-        for item, in session.query(getattr(Pinkunhu, col)).distinct():
+        for item, in session.query(getattr(Pinkunhu2015, col)).distinct():
             data[item] = idx
             idx += 1
         res[col] = data
@@ -101,7 +101,8 @@ def normalize(key, value):
         return MAPPINGS[key][value]
     # 数值
     if key in ['arable_land', 'debt_total', 'living_space', 'member_count', 'person_year_total_income',
-               'year_total_income', 'subsidy_total', 'wood_land', 'xin_nong_he_total', 'xin_yang_lao_total']:
+               'year_total_income', 'subsidy_total', 'wood_land', 'xin_nong_he_total', 'xin_yang_lao_total',
+               'ny_is_poor', 'ny_total_income', 'ny_person_income']:
         return value or 0
     # 布尔
     if key in ['call_number', 'bank_name', 'bank_number', 'help_plan']:
@@ -111,15 +112,15 @@ def normalize(key, value):
 def get_normalized_data():
     """ 获取格式化后的数据 """
     session = get_db_session()
-    objs = session.query(ZhenxiongPinkunhu2015).all()
+    objs = session.query(Pinkunhu2015).filter(Pinkunhu2015.county == '镇雄县').all()
     X, Y = [], []
     for item in objs:
         col_list = []
         for col in [
             'tv', 'washing_machine', 'fridge',
-            'reason', 'is_danger_house', 'is_back_poor', 'is_danger_house', 'is_debt', 'standard',
-            #'arable_land', 'debt_total', 'living_space', 'member_count', 'person_year_total_income',
-            #'year_total_income', 'subsidy_total', 'wood_land', 'xin_nong_he_total', 'xin_yang_lao_total',
+            'reason', 'is_danger_house', 'is_back_poor',  'is_debt', 'standard',
+            'arable_land', 'debt_total', 'living_space', 'member_count', 'person_year_total_income',
+            'year_total_income', 'subsidy_total', 'wood_land', 'xin_nong_he_total', 'xin_yang_lao_total',
             'call_number', 'bank_name', 'bank_number', 'help_plan'
         ]:
 
@@ -135,15 +136,15 @@ def get_normalized_data():
 def get_test_normalized_data():
     """ 获取格式化后的数据 """
     session = get_db_session()
-    objs = session.query(Pinkunhu).filter(Pinkunhu.county == '陆良县').all()
+    objs = session.query(Pinkunhu2015).filter(Pinkunhu2015.county == '陆良县').all()
     X, Y = [], []
     for item in objs:
         col_list = []
         for col in [
             'tv', 'washing_machine', 'fridge',
-            'reason', 'is_danger_house', 'is_back_poor', 'is_danger_house', 'is_debt', 'standard',
-            #'arable_land', 'debt_total', 'living_space', 'member_count', 'person_year_total_income',
-            #'year_total_income', 'subsidy_total', 'wood_land', 'xin_nong_he_total', 'xin_yang_lao_total',
+            'reason', 'is_danger_house', 'is_back_poor',  'is_debt', 'standard',
+            'arable_land', 'debt_total', 'living_space', 'member_count', 'person_year_total_income',
+            'year_total_income', 'subsidy_total', 'wood_land', 'xin_nong_he_total', 'xin_yang_lao_total',
             'call_number', 'bank_name', 'bank_number', 'help_plan'
         ]:
 

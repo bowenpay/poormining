@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 from __future__ import unicode_literals
 __author__ = 'yijingping'
-from data.db import get_db_session, Pinkunhu
+from data.db import get_db_session, Pinkunhu2015
 import numpy as np
 import pandas as pd
 import matplotlib.pyplot as plt
@@ -57,7 +57,7 @@ class PinkunhuCharacter(object):
     def stat_col_percent(self, col):
         top_num = 10
         session = get_db_session()
-        objs = session.query(getattr(Pinkunhu, col)).filter(Pinkunhu.poor_status != '已脱贫')
+        objs = session.query(getattr(Pinkunhu2015, col)).filter(Pinkunhu2015.poor_status != '已脱贫')
         res0 = {}
         for item in objs:
             k = (getattr(item, col) or '')[:2]
@@ -66,7 +66,7 @@ class PinkunhuCharacter(object):
 
         self.plot_col_name(self.count_to_percent(res0)[:20], title='%s-未脱贫' % col)
 
-        objs = session.query(getattr(Pinkunhu, col))
+        objs = session.query(getattr(Pinkunhu2015, col))
         res1 = {}
         for item in objs:
             k = (getattr(item, col) or '')[:2]
@@ -75,7 +75,7 @@ class PinkunhuCharacter(object):
 
         self.plot_col_name(self.count_to_percent(res1)[:20], title='%s-全部' % col)
 
-        objs2 = session.query(getattr(Pinkunhu, col)).filter(Pinkunhu.poor_status=='已脱贫')
+        objs2 = session.query(getattr(Pinkunhu2015, col)).filter(Pinkunhu2015.poor_status == '已脱贫')
         res2 = {}
         for item in objs2:
             k = (getattr(item, col) or '')[:2]

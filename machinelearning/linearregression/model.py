@@ -1,12 +1,16 @@
 # -*- coding: utf-8 -*-
 from __future__ import unicode_literals
-from data.db import get_db_session, Pinkunhu2015
-from sklearn.ensemble import RandomForestClassifier
+import math
+import numpy as np
+import matplotlib.pyplot as plt
+from sklearn.linear_model import LinearRegression
 from data.dbaccess import normalize
+from data.db import get_db_session, Pinkunhu2015
 
 
-class RandomForestModel(object):
-    """ 使用随机森林模型预测是否脱贫 """
+
+class LinearRegressionModel(object):
+    """ 使用线性回归预测下一年人均年收入 """
     def run(self):
         """ 运行 """
         # 获取数据
@@ -14,32 +18,45 @@ class RandomForestModel(object):
         clf = self.get_classifier(X, Y)
         # 测试
         X, Y = self._fetch_test_data()
-        self.predict(clf, X, Y)
+        res = []
+        for item in range(11):
+            hit_ratio = self.predict(clf, X, Y, item * 0.1)
+            res.append([item * 0.1 * 100, hit_ratio * 100])
+
+        # 绘制误差与命中率的线性关系图
+        arr = np.array(res)
+        plt.plot(arr[:, 0], arr[:, 1])        # 绘制线
+        plt.plot(arr[:, 0], arr[:, 1], 'ro')  # 绘制点
+        plt.xlabel('误差率(%)')
+        plt.ylabel('命中率(%)')
+        plt.title('使用线性回归预测下一年人均年收入效果图')
+        plt.show()
 
     def get_classifier(self, X, Y):
-        """ 构建随机森林模型
+        """ 构建线性回归模型
         :param X: 训练数据
         :param Y: 训练数据结果
         :return: 模型
         """
-        clf = RandomForestClassifier(n_estimators=10)
+        clf = LinearRegression()
         clf.fit(X, Y)
         return clf
 
-    def predict(self, clf, X, Y):
+    def predict(self, clf, X, Y, deviation=0.1):
         """ 用当前的模型预测
         :param clf: 模型
         :param X: 测试数据
         :param Y: 测试数据结果
+        :param deviation: 允许误差率
         :return: 命中率
         """
         Y2 = clf.predict(X)
         total, hit = len(Y), 0
         for idx, v in enumerate(Y2):
-            if Y[idx] == v:
+            if math.fabs(Y[idx] - v) <= math.fabs(Y[idx] * deviation):  # 误差小于deviation，则认为预测准确
                 hit += 1
 
-        print 'Total: %d, Hit: %d, Precision: %.2f%%' % (total, hit, 100.0*hit/total)
+        print 'Deviation: %d%%, Total: %d, Hit: %d, Precision: %.2f%%' % (100 * deviation, total, hit, 100.0*hit/total)
         # 用 镇雄县 的模型去预测 陆良县 的结果
         # Total: 6769, Hit: 5295, Precision: 78.22%
 
@@ -48,7 +65,7 @@ class RandomForestModel(object):
     def _fetch_data(self):
         """ 获取建模数据 """
         session = get_db_session()
-        objs = session.query(Pinkunhu2015).filter(Pinkunhu2015.county == '镇雄县').all()
+        objs = session.query(Pinkunhu2015).filter(Pinkunhu2015.county == '镇雄县', Pinkunhu2015.ny_person_income != -1).all()
         X, Y = [], []
         for item in objs:
             col_list = []
@@ -63,7 +80,7 @@ class RandomForestModel(object):
                 normalized_value = normalize(col, getattr(item, col))
                 col_list.append(normalized_value)
             X.append(col_list)
-            normalized_value = normalize('poor_status', getattr(item, 'poor_status'))
+            normalized_value = normalize('ny_person_income', getattr(item, 'ny_person_income'))
             Y.append(normalized_value)
 
         return X, Y
@@ -71,7 +88,7 @@ class RandomForestModel(object):
     def _fetch_test_data(self):
         """ 获取测试数据 """
         session = get_db_session()
-        objs = session.query(Pinkunhu2015).filter(Pinkunhu2015.county == '彝良县').all()
+        objs = session.query(Pinkunhu2015).filter(Pinkunhu2015.county == '彝良县', Pinkunhu2015.ny_person_income != -1).all()
         X, Y = [], []
         for item in objs:
             col_list = []
@@ -86,12 +103,12 @@ class RandomForestModel(object):
                 normalized_value = normalize(col, getattr(item, col))
                 col_list.append(normalized_value)
             X.append(col_list)
-            normalized_value = normalize('poor_status', getattr(item, 'poor_status'))
+            normalized_value = normalize('ny_person_income', getattr(item, 'ny_person_income'))
             Y.append(normalized_value)
 
         return X, Y
 
 
 if __name__ == '__main__':
-    m = RandomForestModel()
+    m = LinearRegressionModel()
     m.run()

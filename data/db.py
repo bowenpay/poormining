@@ -7,9 +7,28 @@ from sqlalchemy import Column, Integer, String, Text, Float
 from settings import DATABASE
 
 
-Base = declarative_base()
 DB_SESSION = None
+Base = declarative_base()
 
+
+def get_db_session():
+    """
+    获取数据库连接
+    """
+    global DB_SESSION
+    if not DB_SESSION:
+        # 初始化数据库连接:
+        engine = create_engine('mysql+mysqlconnector://%s:%s@%s:%s/%s' % (
+            DATABASE.get('USER'), DATABASE.get('PASSWORD'), DATABASE.get('HOST'),
+            DATABASE.get('PORT', 3306), DATABASE.get('NAME'))
+        )
+        # 创建DBSession类型:
+        DB_SESSION = sessionmaker(bind=engine)()
+    return DB_SESSION
+
+
+####################################################################
+###### 数据库表 start
 
 class PinkunhuBase(object):
     """ 贫困户表的父类 """
@@ -53,41 +72,28 @@ class PinkunhuBase(object):
     washing_machine = Column(String(50))
     fridge = Column(String(50))
 
+    ny_is_poor = Column(Integer()) # 下一年是否贫困, 1表示是，0表示否
+    ny_total_income = Column(Float()) # 下一年年收入
+    ny_person_income = Column(Float()) # 下一年人均年收入
 
-class Pinkunhu(PinkunhuBase, Base):
+
+class Pinkunhu2014(PinkunhuBase, Base):
+    """ 2014年贫困户表 """
+    __tablename__ = 'yunnan_all_pinkunhu_2014'
+
+
+class Pinkunhu2015(PinkunhuBase, Base):
     """ 2015年贫困户表 """
     __tablename__ = 'yunnan_all_pinkunhu_2015'
 
 
-class ZhenxiongPinkunhu2015(PinkunhuBase, Base):
-    """ 镇雄县2015年贫困户表 """
-    __tablename__ = 'zhenxiong_2015'
+class Pinkunhu2016(PinkunhuBase, Base):
+    """ 2016年贫困户表 """
+    __tablename__ = 'yunnan_all_pinkunhu_2016'
 
-    # ny_is_poor = Column(Integer())
-    # ny_increase_income = Column(Float())
-    # ny_increase_person_income = Column(Float())
+###### 数据库表 end
+####################################################################
 
-
-class ZhenxiongPinkunhu2016(PinkunhuBase, Base):
-    """ 镇雄县2016年贫困户表 """
-    __tablename__ = 'zhenxiong_2016'
-
-    # ny_is_poor = Column(Integer())
-    # ny_increase_income = Column(Float())
-    # ny_increase_person_income = Column(Float())
-
-
-def get_db_session():
-    global DB_SESSION
-    if not DB_SESSION:
-        # 初始化数据库连接:
-        engine = create_engine('mysql+mysqlconnector://%s:%s@%s:%s/%s' % (
-            DATABASE.get('USER'), DATABASE.get('PASSWORD'), DATABASE.get('HOST'),
-            DATABASE.get('PORT', 3306), DATABASE.get('NAME'))
-        )
-        # 创建DBSession类型:
-        DB_SESSION = sessionmaker(bind=engine)()
-    return DB_SESSION
 
 
 

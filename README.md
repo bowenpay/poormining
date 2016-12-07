@@ -45,9 +45,9 @@ clone代码,安装依赖python库
 
 使用下面的语句创建数据库
 
-    mysql> CREATE DATABASE `data_fupin` CHARACTER SET utf8;
+    mysql> CREATE DATABASE `poormining` CHARACTER SET utf8;
 
-并将 `./data/*.sql` 文件导入到数据库中
+并将 `./data/poormining.sql.bz2` 文件解压后，导入到数据库中。
 
 ##### 5) 更新配置文件local_settings
 

@@ -3,11 +3,11 @@ __author__ = 'yijingping'
 
 DATABASE = {
         'HOST': '127.0.0.1',
-        'NAME': 'data_fupin',
+        'NAME': 'poormining',
         'USER': 'root',
         'PASSWORD': '',
         'OPTIONS': {
-            'charset': 'utf8mb4',
+            'charset': 'utf-8',
         }
 }
 

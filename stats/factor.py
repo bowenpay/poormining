@@ -44,7 +44,6 @@ class PinkunhuCharacter(object):
         fpath = os.path.join(os.path.dirname(__file__), 'images', '%s.png' % title)
         plt.savefig(fpath)
 
-
     def count_to_percent(self, cnt_dict):
         total = sum(cnt_dict.values())
         res = []

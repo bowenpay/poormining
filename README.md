@@ -148,6 +148,29 @@ class PinkunhuCharacter(object):
 ![](assets/images/linearregression.jpg?raw=true)
 
 
+## 使用 Lasso 回归模型预测下一年人均年收入
+
+操作与展示 同 线性回归模型 一致。执行命令
+
+    $ PYTHONPATH=. python machinelearning/lasso/model.py
+
+会打印出
+
+    Deviation: 0%, Total: 40820, Hit: 0, Precision: 0.00%
+    Deviation: 10%, Total: 40820, Hit: 24513, Precision: 60.05%
+    Deviation: 20%, Total: 40820, Hit: 33011, Precision: 80.87%
+    Deviation: 30%, Total: 40820, Hit: 36230, Precision: 88.76%
+    Deviation: 40%, Total: 40820, Hit: 37379, Precision: 91.57%
+    Deviation: 50%, Total: 40820, Hit: 38048, Precision: 93.21%
+    Deviation: 60%, Total: 40820, Hit: 38511, Precision: 94.34%
+    Deviation: 70%, Total: 40820, Hit: 38830, Precision: 95.12%
+    Deviation: 80%, Total: 40820, Hit: 39077, Precision: 95.73%
+    Deviation: 90%, Total: 40820, Hit: 39282, Precision: 96.23%
+    Deviation: 100%, Total: 40820, Hit: 39429, Precision: 96.59%
+
+并绘制相应结果图。从上面的结果看出，效果和线性回归模型基本一样。
+
+    
 ## 其它
 
 

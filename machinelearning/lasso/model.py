@@ -3,14 +3,13 @@ from __future__ import unicode_literals
 import math
 import numpy as np
 import matplotlib.pyplot as plt
-from sklearn.linear_model import LinearRegression
+from sklearn.linear_model import Lasso
 from data.dbaccess import normalize
 from data.db import get_db_session, Pinkunhu2015
 
 
-
-class LinearRegressionModel(object):
-    """ 使用线性回归预测下一年人均年收入 """
+class LassoModel(object):
+    """ 使用Lasso预测下一年人均年收入 """
     def run(self):
         """ 运行 """
         # 获取数据
@@ -29,16 +28,16 @@ class LinearRegressionModel(object):
         plt.plot(arr[:, 0], arr[:, 1], 'ro')  # 绘制点
         plt.xlabel('误差率(%)')
         plt.ylabel('命中率(%)')
-        plt.title('使用线性回归预测下一年人均年收入效果图')
+        plt.title('使用Lasso预测下一年人均年收入效果图')
         plt.show()
 
     def get_classifier(self, X, Y):
-        """ 构建线性回归模型
+        """ 构建Lasso模型
         :param X: 训练数据
         :param Y: 训练数据结果
         :return: 模型
         """
-        clf = LinearRegression()
+        clf = Lasso()
         clf.fit(X, Y)
         return clf
 
@@ -59,16 +58,16 @@ class LinearRegressionModel(object):
         print 'Deviation: %d%%, Total: %d, Hit: %d, Precision: %.2f%%' % (100 * deviation, total, hit, 100.0*hit/total)
         # 用 镇雄县 的模型去预测 陆良县 的结果
         # Deviation: 0%, Total: 40820, Hit: 0, Precision: 0.00%
-        # Deviation: 10%, Total: 40820, Hit: 24418, Precision: 59.82%
-        # Deviation: 20%, Total: 40820, Hit: 32935, Precision: 80.68%
-        # Deviation: 30%, Total: 40820, Hit: 36211, Precision: 88.71%
-        # Deviation: 40%, Total: 40820, Hit: 37367, Precision: 91.54%
-        # Deviation: 50%, Total: 40820, Hit: 38041, Precision: 93.19%
-        # Deviation: 60%, Total: 40820, Hit: 38502, Precision: 94.32%
-        # Deviation: 70%, Total: 40820, Hit: 38816, Precision: 95.09%
-        # Deviation: 80%, Total: 40820, Hit: 39071, Precision: 95.72%
+        # Deviation: 10%, Total: 40820, Hit: 24513, Precision: 60.05%
+        # Deviation: 20%, Total: 40820, Hit: 33011, Precision: 80.87%
+        # Deviation: 30%, Total: 40820, Hit: 36230, Precision: 88.76%
+        # Deviation: 40%, Total: 40820, Hit: 37379, Precision: 91.57%
+        # Deviation: 50%, Total: 40820, Hit: 38048, Precision: 93.21%
+        # Deviation: 60%, Total: 40820, Hit: 38511, Precision: 94.34%
+        # Deviation: 70%, Total: 40820, Hit: 38830, Precision: 95.12%
+        # Deviation: 80%, Total: 40820, Hit: 39077, Precision: 95.73%
         # Deviation: 90%, Total: 40820, Hit: 39282, Precision: 96.23%
-        # Deviation: 100%, Total: 40820, Hit: 39432, Precision: 96.60%
+        # Deviation: 100%, Total: 40820, Hit: 39429, Precision: 96.59%
 
         return hit * 1.0 / total
 
@@ -120,5 +119,5 @@ class LinearRegressionModel(object):
 
 
 if __name__ == '__main__':
-    m = LinearRegressionModel()
+    m = LassoModel()
     m.run()

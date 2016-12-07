@@ -55,17 +55,19 @@ clone代码,安装依赖python库
 
 在 poormining 目录下,添加 local_settings.py 文件,修改对应的用户名密码，配置如下:
 
-    # -*- coding: utf-8 -*-
-    
-    DATABASE = {
-            'HOST': '127.0.0.1',
-            'NAME': 'data_fupin',
-            'USER': 'root',
-            'PASSWORD': '123456',
-            'OPTIONS': {
-                'charset': 'utf8mb4',
-            }
+```python
+# -*- coding: utf-8 -*-
+
+DATABASE = {
+    'HOST': '127.0.0.1',
+    'NAME': 'poormining',
+    'USER': 'root',
+    'PASSWORD': '',
+    'OPTIONS': {
+        'charset': 'utf-8',
     }
+}
+```
 
 # 执行
 

@@ -27,8 +27,15 @@
 
 安装Mysql-python依赖
     
+    // for CentOS
     $ yum install python-devel mysql-devel gcc
-
+    
+    // for Mac
+    $ brew install mysql-connector-c
+    
+    // for Windows
+    前往 https://pypi.python.org/pypi/MySQL-python/1.2.5 下载 exe
+    
 clone代码,安装依赖python库
 
     $ git clone https://github.com/bowenpay/poormining.git
@@ -49,7 +56,7 @@ clone代码,安装依赖python库
 
     mysql> CREATE DATABASE `poormining` CHARACTER SET utf8;
 
-并将 `./data/poormining.sql.bz2` 文件解压后，导入到数据库中。
+并将 `./data/poormining.sql.bz2` 文件解压后，导入到数据库中。 如果遇到出错，直接忽略就行。
 
 ##### 5) 更新配置文件local_settings
 
@@ -71,25 +78,6 @@ DATABASE = {
 
 # 执行
 
-## 生成特征图
-
-执行命令 
-
-    $ PYTHONPATH=. python stats/factor.py
-
-会在 `stats/images/` 下面生成贫困户、已脱贫贫困户、已脱贫占总贫困户比的单因子影响图。
-
-如果想添加跟多的因子，请修改 `stats/factor.py` 中 类`PinkunhuCharacter` 的 `run` 方法。 如下所示
-
-```python
-class PinkunhuCharacter(object):
-    """ 贫困户特征
-    """
-    def run(self):
-        for col in ['member_count', 'is_debt']:   # 在list中添加想要的因子
-            self.stat_col_percent(col)
-```
-
 ## 使用随机森林模型预测是否脱贫
 
 执行命令
@@ -99,9 +87,41 @@ class PinkunhuCharacter(object):
 
 会打印出
 
-    Total: 48378, Hit: 47494, Precision: 98.17%
+    Total: 48378, Hit: 47353, Precision: 97.88%
 
-表示对48378个数据进行检测， 命中47494个， 命中率是 98.17%.
+    Feature ranking:
+    1. person_year_total_income (0.711613)
+    2. year_total_income (0.109099)
+    3. member_count (0.050706)
+    4. subsidy_total (0.025300)
+    5. reason (0.018617)
+    6. living_space (0.016223)
+    7. arable_land (0.016084)
+    8. wood_land (0.010983)
+    9. washing_machine (0.005832)
+    10. fridge (0.005765)
+    11. help_plan (0.005691)
+    12. is_debt (0.005189)
+    13. tv (0.004758)
+    14. is_danger_house (0.004013)
+    15. call_number (0.002760)
+    16. bank_number (0.002542)
+    17. xin_nong_he_total (0.002481)
+    18. debt_total (0.001588)
+    19. xin_yang_lao_total (0.000756)
+    20. bank_name (0.000000)
+    21. standard (0.000000)
+    22. is_back_poor (0.000000)
+    
+    
+
+表示对48378个数据进行检测， 命中47353个， 命中率是 97.88%. 
+
+后面是feature importances 排名，可以看出，`person_year_total_income` 是主要影响feature。
+
+接着，绘制出 feature importances 柱状图
+
+![](assets/images/radomforest_feature_importances.jpg?raw=true)
 
 ## 使用线性回归模型预测下一年人均年收入
 
@@ -196,7 +216,28 @@ class PinkunhuCharacter(object):
     Deviation: 100%, Total: 40820, Hit: 39432, Precision: 96.60%
 
 并绘制相应结果图。从上面的结果看出，效果和线性回归模型基本一样。
-    
+
+
+## 生成特征图
+
+执行命令 
+
+    $ PYTHONPATH=. python stats/factor.py
+
+会在 `stats/images/` 下面生成贫困户、已脱贫贫困户、已脱贫占总贫困户比的单因子影响图。
+
+如果想添加跟多的因子，请修改 `stats/factor.py` 中 类`PinkunhuCharacter` 的 `run` 方法。 如下所示
+
+```python
+class PinkunhuCharacter(object):
+    """ 贫困户特征
+    """
+    def run(self):
+        for col in ['member_count', 'is_debt']:   # 在list中添加想要的因子
+            self.stat_col_percent(col)
+```
+
+
 ## 其它
 
 

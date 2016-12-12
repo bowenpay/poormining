@@ -5,7 +5,7 @@ import matplotlib.pyplot as plt
 from sklearn.ensemble import RandomForestClassifier
 from data.dbaccess import normalize
 from data.db import get_db_session, Pinkunhu2015
-
+from sklearn.metrics import classification_report
 
 class RandomForestModel(object):
     """ 使用随机森林模型预测是否脱贫 """
@@ -55,6 +55,8 @@ class RandomForestModel(object):
                 hit += 1
 
         print 'Total: %d, Hit: %d, Precision: %.2f%%' % (total, hit, 100.0*hit/total)
+        # print 'Accuracy of RF Classifier:',clf.oob_score
+        print classification_report(Y,Y2,target_names=['poor_status'])
         # 用 镇雄县 的模型去预测 陆良县 的结果
         # Total: 6769, Hit: 5295, Precision: 78.22%
 

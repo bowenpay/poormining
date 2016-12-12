@@ -57,6 +57,8 @@ clone代码,安装依赖python库
     mysql> CREATE DATABASE `poormining` CHARACTER SET utf8;
 
 然后，将 脱敏数据sql文件（暂不对外提供） 导入到数据库中。 （如果遇到出错，直接忽略就行。）
+若出错在my.cnf文件中添加或者修改以下变量：
+max_allowed_packet = 200M  (也可以设置自己需要的大小)
 
 本项目使用2个县的数据，一个县用于建模，另一个县用于验证。时间跨度为2014年~2016年，3年共3张表。每张表 33 个字段。
 

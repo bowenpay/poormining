@@ -11,7 +11,7 @@ from data.db import get_db_session, Pinkunhu2015
 
 class LinearRegressionModel(object):
     """ 使用线性回归预测下一年人均年收入 """
-    # 提取的属性
+        # 提取的属性
     features = [
         'tv', 'washing_machine', 'fridge',
         'reason', 'is_danger_house', 'is_back_poor', 'is_debt', 'standard',

@@ -13,8 +13,9 @@ class RandomForestModel(object):
     features = [
         'tv', 'washing_machine', 'fridge',
         'reason', 'is_danger_house', 'is_back_poor', 'is_debt', 'standard',
-        'arable_land', 'debt_total', 'living_space', 'member_count', 'person_year_total_income',
-        'year_total_income', 'subsidy_total', 'wood_land', 'xin_nong_he_total', 'xin_yang_lao_total',
+        'arable_land', 'debt_total', 'living_space', 'member_count',
+        #'person_year_total_income', 'year_total_income',
+        'subsidy_total', 'wood_land', 'xin_nong_he_total', 'xin_yang_lao_total',
         'call_number', 'bank_name', 'bank_number', 'help_plan'
     ]
     # 验证的目标
@@ -49,10 +50,12 @@ class RandomForestModel(object):
         :return: 命中率
         """
         Y2 = clf.predict(X)
-        total, hit = len(Y), 0
+        total, hit = 0, 0
         for idx, v in enumerate(Y2):
-            if Y[idx] == v:
-                hit += 1
+            if v == 1:
+                total += 1
+                if Y[idx] == v:
+                    hit += 1
 
         print 'Total: %d, Hit: %d, Precision: %.2f%%' % (total, hit, 100.0*hit/total)
         # 用 镇雄县 的模型去预测 陆良县 的结果

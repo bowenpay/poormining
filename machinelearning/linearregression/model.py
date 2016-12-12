@@ -2,6 +2,7 @@
 from __future__ import unicode_literals
 import math
 import numpy as np
+import pandas as pd
 import matplotlib.pyplot as plt
 from sklearn.linear_model import LinearRegression
 from data.dbaccess import normalize
@@ -97,7 +98,8 @@ class LinearRegressionModel(object):
     def _fetch_test_data(self):
         """ 获取测试数据 """
         session = get_db_session()
-        objs = session.query(Pinkunhu2015).filter(Pinkunhu2015.county == '彝良县', Pinkunhu2015.ny_person_income != -1).all()
+        objs = session.query(Pinkunhu2015).filter(Pinkunhu2015.county == '彝良县', Pinkunhu2015.ny_person_income != -1,
+        Pinkunhu2015.person_year_total_income > 0, Pinkunhu2015.person_year_total_income < 7000).all()
         X, Y = [], []
         for item in objs:
             col_list = []

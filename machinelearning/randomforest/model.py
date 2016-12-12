@@ -5,17 +5,18 @@ import matplotlib.pyplot as plt
 from sklearn.ensemble import RandomForestClassifier
 from data.dbaccess import normalize
 from data.db import get_db_session, Pinkunhu2015
-from sklearn.metrics import classification_report
+
 
 class RandomForestModel(object):
     """ 使用随机森林模型预测是否脱贫 """
     # 提取的属性
     features = [
         'tv', 'washing_machine', 'fridge',
-        'reason', 'is_danger_house',  'is_debt',
-        'arable_land', 'living_space', 'member_count',
-        'subsidy_total', 'wood_land',
-        'help_plan'
+        'reason', 'is_danger_house', 'is_back_poor', 'is_debt', 'standard',
+        'arable_land', 'debt_total', 'living_space', 'member_count',
+        #'person_year_total_income', 'year_total_income',
+        'subsidy_total', 'wood_land', 'xin_nong_he_total', 'xin_yang_lao_total',
+        'call_number', 'bank_name', 'bank_number', 'help_plan'
     ]
     # 验证的目标
     target = 'poor_status'
@@ -49,14 +50,14 @@ class RandomForestModel(object):
         :return: 命中率
         """
         Y2 = clf.predict(X)
-        total, hit = len(Y), 0
+        total, hit = 0, 0
         for idx, v in enumerate(Y2):
-            if Y[idx] == v:
-                hit += 1
+            if v == 1:
+                total += 1
+                if Y[idx] == v:
+                    hit += 1
 
         print 'Total: %d, Hit: %d, Precision: %.2f%%' % (total, hit, 100.0*hit/total)
-        # print 'Accuracy of RF Classifier:',clf.oob_score
-        print classification_report(Y,Y2,target_names=['poor_status'])
         # 用 镇雄县 的模型去预测 陆良县 的结果
         # Total: 6769, Hit: 5295, Precision: 78.22%
 

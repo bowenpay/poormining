@@ -11,6 +11,18 @@ from data.db import get_db_session, Pinkunhu2015
 
 class LinearRegressionModel(object):
     """ 使用线性回归预测下一年人均年收入 """
+        # 提取的属性
+    features = [
+        'tv', 'washing_machine', 'fridge',
+        'reason', 'is_danger_house', 'is_back_poor', 'is_debt', 'standard',
+        'arable_land', 'debt_total', 'living_space', 'member_count',
+        'person_year_total_income', 'year_total_income',
+        'subsidy_total', 'wood_land', 'xin_nong_he_total', 'xin_yang_lao_total',
+        'call_number', 'bank_name', 'bank_number', 'help_plan'
+    ]
+    # 验证的目标
+    target = 'ny_person_income'
+
     def run(self):
         """ 运行 """
         # 获取数据
@@ -75,46 +87,48 @@ class LinearRegressionModel(object):
     def _fetch_data(self):
         """ 获取建模数据 """
         session = get_db_session()
-        objs = session.query(Pinkunhu2015).filter(Pinkunhu2015.county == '镇雄县', Pinkunhu2015.ny_person_income != -1).all()
+        objs = session.query(Pinkunhu2015).filter(
+                Pinkunhu2015.county == '镇雄县', Pinkunhu2015.ny_person_income != -1,
+                Pinkunhu2015.person_year_total_income > 0, Pinkunhu2015.person_year_total_income < 7000,
+        ).all()
         X, Y = [], []
         for item in objs:
             col_list = []
-            for col in [
-                'tv', 'washing_machine', 'fridge',
-                'reason', 'is_danger_house', 'is_back_poor', 'is_debt', 'standard',
-                'arable_land', 'debt_total', 'living_space', 'member_count',
-                 'subsidy_total', 'wood_land', 'xin_nong_he_total', 'xin_yang_lao_total',
-                'call_number', 'bank_name', 'bank_number', 'help_plan'
-            ]:
-
+            for col in self.features:
                 normalized_value = normalize(col, getattr(item, col))
                 col_list.append(normalized_value)
             X.append(col_list)
-            normalized_value = normalize('ny_person_income', getattr(item, 'ny_person_income'))
+            normalized_value = normalize(self.target, getattr(item, self.target))
             Y.append(normalized_value)
+
+        # # 筛掉可能有错误的数据
+        # 人均年收入除以100后，查看分布，少于5次的不纳入模型, 效果不佳，废弃
+        # df = pd.DataFrame(X, columns=self.features)
+        # print '#df.shape:', df.shape
+        # df['person_year_total_income'] = df['person_year_total_income'] / 100
+        # df['person_year_total_income'] = df['person_year_total_income'].astype(int)
+        # df['person_year_total_income'] = df['person_year_total_income'] * 100
+        # df = df.groupby('person_year_total_income').filter(lambda x: len(x) > 5)
+        # print '#df.shape:', df.shape
+        # X, Y = df.loc[:, self.features[:-1]], df.loc[:, self.target]
 
         return X, Y
 
     def _fetch_test_data(self):
         """ 获取测试数据 """
         session = get_db_session()
-        objs = session.query(Pinkunhu2015).filter(Pinkunhu2015.county == '彝良县', Pinkunhu2015.ny_person_income != -1,
-        Pinkunhu2015.person_year_total_income > 0, Pinkunhu2015.person_year_total_income < 7000).all()
+        objs = session.query(Pinkunhu2015).filter(
+                Pinkunhu2015.county == '彝良县', Pinkunhu2015.ny_person_income != -1,
+                Pinkunhu2015.person_year_total_income > 0, Pinkunhu2015.person_year_total_income < 7000,
+        ).all()
         X, Y = [], []
         for item in objs:
             col_list = []
-            for col in [
-                'tv', 'washing_machine', 'fridge',
-                'reason', 'is_danger_house', 'is_back_poor',  'is_debt', 'standard',
-                'arable_land', 'debt_total', 'living_space', 'member_count',
-                 'subsidy_total', 'wood_land', 'xin_nong_he_total', 'xin_yang_lao_total',
-                'call_number', 'bank_name', 'bank_number', 'help_plan'
-            ]:
-
+            for col in self.features:
                 normalized_value = normalize(col, getattr(item, col))
                 col_list.append(normalized_value)
             X.append(col_list)
-            normalized_value = normalize('ny_person_income', getattr(item, 'ny_person_income'))
+            normalized_value = normalize(self.target, getattr(item, self.target))
             Y.append(normalized_value)
 
         return X, Y

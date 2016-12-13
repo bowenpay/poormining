@@ -4,7 +4,6 @@ import math
 import numpy as np
 import pandas as pd
 import matplotlib.pyplot as plt
-from sklearn.linear_model import LinearRegression
 from sklearn.tree import DecisionTreeRegressor
 from data.dbaccess import normalize
 from data.db import get_db_session, Pinkunhu2015

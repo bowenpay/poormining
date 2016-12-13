@@ -10,7 +10,7 @@ from data.dbaccess import normalize
 from data.db import get_db_session, Pinkunhu2015
 
 
-class LinearRegressionModel(object):
+class SVRRegressionModel(object):
     """ 使用线性回归预测下一年人均年收入 """
         # 提取的属性
     features = [
@@ -136,5 +136,5 @@ class LinearRegressionModel(object):
 
 
 if __name__ == '__main__':
-    m = LinearRegressionModel()
+    m = SVRRegressionModel()
     m.run()

@@ -4,13 +4,12 @@ import math
 import numpy as np
 import pandas as pd
 import matplotlib.pyplot as plt
-from sklearn.linear_model import LinearRegression
 from sklearn.neighbors import KNeighborsRegressor
 from data.dbaccess import normalize
 from data.db import get_db_session, Pinkunhu2015
 
 
-class LinearRegressionModel(object):
+class KNeighborsRegressorModel(object):
     """ 使用线性回归预测下一年人均年收入 """
         # 提取的属性
     features = [
@@ -51,7 +50,7 @@ class LinearRegressionModel(object):
         :param Y: 训练数据结果
         :return: 模型
         """
-        clf = LinearRegression()
+
         clf = KNeighborsRegressor(weights='uniform')
         clf.fit(X, Y)
         return clf
@@ -137,5 +136,5 @@ class LinearRegressionModel(object):
 
 
 if __name__ == '__main__':
-    m = LinearRegressionModel()
+    m = KNeighborsRegressorModel()
     m.run()

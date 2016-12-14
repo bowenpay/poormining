@@ -41,7 +41,7 @@ class KNeighborsRegressorModel(object):
         plt.plot(arr[:, 0], arr[:, 1], 'ro')  # 绘制点
         plt.xlabel('误差率(%)')
         plt.ylabel('命中率(%)')
-        plt.title('使用线性回归预测下一年人均年收入效果图')
+        plt.title('使用最近邻回归预测下一年人均年收入效果图')
         plt.show()
 
     def get_classifier(self, X, Y):

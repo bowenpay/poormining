@@ -31,9 +31,9 @@ class DecisionTreeRegressionModel(object):
         # 测试
         X, Y = self._fetch_test_data()
         res = []
-        for item in range(11):
-            hit_ratio = self.predict(clf, X, Y, item * 0.1)
-            res.append([item * 0.1 * 100, hit_ratio * 100])
+        for item in range(21):
+            hit_ratio = self.predict(clf, X, Y, item * 0.02)
+            res.append([item * 0.02 * 100, hit_ratio * 100])
 
         # 绘制误差与命中率的线性关系图
         arr = np.array(res)
@@ -41,7 +41,7 @@ class DecisionTreeRegressionModel(object):
         plt.plot(arr[:, 0], arr[:, 1], 'ro')  # 绘制点
         plt.xlabel('误差率(%)')
         plt.ylabel('命中率(%)')
-        plt.title('使用线性回归预测下一年人均年收入效果图')
+        plt.title('使用决策树回归预测下一年人均年收入效果图')
         plt.show()
 
     def get_classifier(self, X, Y):
@@ -50,7 +50,7 @@ class DecisionTreeRegressionModel(object):
         :param Y: 训练数据结果
         :return: 模型
         """
-        clf = DecisionTreeRegressor()
+        clf = DecisionTreeRegressor(max_depth=4)
         clf.fit(X, Y)
         return clf
 

@@ -3,23 +3,23 @@ from __future__ import unicode_literals
 import math
 import numpy as np
 import pandas as pd
-from sklearn import preprocessing
 import matplotlib.pyplot as plt
 from sklearn.tree import DecisionTreeRegressor
+from sklearn.ensemble import AdaBoostRegressor
 from data.dbaccess import normalize
 from data.db import get_db_session, Pinkunhu2015
 
 
-class DecisionTreeRegressionModel(object):
+class AdaBoostRegressorModel(object):
     """ 使用线性回归预测下一年人均年收入 """
         # 提取的属性
     features = [
         'tv', 'washing_machine', 'fridge',
-        'reason', 'is_danger_house',  'is_debt',
-        'arable_land',  'living_space', 'member_count',
+        'reason', 'is_danger_house', 'is_back_poor', 'is_debt', 'standard',
+        'arable_land', 'debt_total', 'living_space', 'member_count',
         'person_year_total_income', 'year_total_income',
-        'subsidy_total', 'wood_land',
-        'help_plan'
+        'subsidy_total', 'wood_land', 'xin_nong_he_total', 'xin_yang_lao_total',
+        'call_number', 'bank_name', 'bank_number', 'help_plan'
     ]
     # 验证的目标
     target = 'ny_person_income'
@@ -32,9 +32,9 @@ class DecisionTreeRegressionModel(object):
         # 测试
         X, Y = self._fetch_test_data()
         res = []
-        for item in range(21):
-            hit_ratio = self.predict(clf, X, Y, item * 0.02)
-            res.append([item * 0.02 * 100, hit_ratio * 100])
+        for item in range(11):
+            hit_ratio = self.predict(clf, X, Y, item * 0.1)
+            res.append([item * 0.1 * 100, hit_ratio * 100])
 
         # 绘制误差与命中率的线性关系图
         arr = np.array(res)
@@ -42,7 +42,7 @@ class DecisionTreeRegressionModel(object):
         plt.plot(arr[:, 0], arr[:, 1], 'ro')  # 绘制点
         plt.xlabel('误差率(%)')
         plt.ylabel('命中率(%)')
-        plt.title('使用决策树回归预测下一年人均年收入效果图')
+        plt.title('使用Adaboost随机决策树回归预测下一年人均年收入效果图')
         plt.show()
 
     def get_classifier(self, X, Y):
@@ -51,7 +51,8 @@ class DecisionTreeRegressionModel(object):
         :param Y: 训练数据结果
         :return: 模型
         """
-        clf = DecisionTreeRegressor()
+        # rng = np.random.RandomState(1)
+        clf = AdaBoostRegressor(DecisionTreeRegressor())
         clf.fit(X, Y)
         return clf
 
@@ -70,7 +71,6 @@ class DecisionTreeRegressionModel(object):
                 hit += 1
 
         print 'Deviation: %d%%, Total: %d, Hit: %d, Precision: %.2f%%' % (100 * deviation, total, hit, 100.0*hit/total)
-
         # 用 镇雄县 的模型去预测 陆良县 的结果
         # Deviation: 0%, Total: 40820, Hit: 0, Precision: 0.00%
         # Deviation: 10%, Total: 40820, Hit: 24418, Precision: 59.82%
@@ -91,7 +91,7 @@ class DecisionTreeRegressionModel(object):
         session = get_db_session()
         objs = session.query(Pinkunhu2015).filter(
                 Pinkunhu2015.county == '镇雄县', Pinkunhu2015.ny_person_income != -1,
-                Pinkunhu2015.person_year_total_income > 100, Pinkunhu2015.person_year_total_income < 5000,
+                Pinkunhu2015.person_year_total_income > 0, Pinkunhu2015.person_year_total_income < 7000,
         ).all()
         X, Y = [], []
         for item in objs:
@@ -121,7 +121,7 @@ class DecisionTreeRegressionModel(object):
         session = get_db_session()
         objs = session.query(Pinkunhu2015).filter(
                 Pinkunhu2015.county == '彝良县', Pinkunhu2015.ny_person_income != -1,
-                Pinkunhu2015.person_year_total_income > 100, Pinkunhu2015.person_year_total_income < 5000,
+                Pinkunhu2015.person_year_total_income > 0, Pinkunhu2015.person_year_total_income < 7000,
         ).all()
         X, Y = [], []
         for item in objs:
@@ -137,5 +137,5 @@ class DecisionTreeRegressionModel(object):
 
 
 if __name__ == '__main__':
-    m = DecisionTreeRegressionModel()
+    m = AdaBoostRegressorModel()
     m.run()

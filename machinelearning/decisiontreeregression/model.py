@@ -3,52 +3,38 @@ from __future__ import unicode_literals
 import math
 import numpy as np
 import pandas as pd
+from sklearn import preprocessing
 import matplotlib.pyplot as plt
-from sklearn.linear_model import LinearRegression
+from sklearn.tree import DecisionTreeRegressor
 from data.dbaccess import normalize
 from data.db import get_db_session, Pinkunhu2015
 
 
-class LinearRegressionModel(object):
+class DecisionTreeRegressionModel(object):
     """ 使用线性回归预测下一年人均年收入 """
         # 提取的属性
     features = [
         'tv', 'washing_machine', 'fridge',
-        'reason', 'is_danger_house', 'is_back_poor', 'is_debt', 'standard',
-        'arable_land', 'debt_total', 'living_space', 'member_count',
+        'reason', 'is_danger_house',  'is_debt',
+        'arable_land',  'living_space', 'member_count',
         'person_year_total_income', 'year_total_income',
-        'subsidy_total', 'wood_land', 'xin_nong_he_total', 'xin_yang_lao_total',
-        'call_number', 'bank_name', 'bank_number', 'help_plan'
+        'subsidy_total', 'wood_land',
+        'help_plan'
     ]
     # 验证的目标
     target = 'ny_person_income'
-    # 虚拟标量
-    dummy_features = [
-        'tv', 'washing_machine', 'fridge',
-        'reason', 'is_danger_house', 'is_back_poor',  'is_debt', 'standard',
-        'call_number', 'bank_name', 'bank_number', 'help_plan'
-    ]
 
     def run(self):
         """ 运行 """
         # 获取数据
         X, Y = self._fetch_data()
         clf = self.get_classifier(X, Y)
-        print X.columns
-        print 'Best Coefficients:', clf.coef_
-        x_columns = X.columns
         # 测试
-        # 补齐X缺失的哑变量
         X, Y = self._fetch_test_data()
-        lost_columns = list(set(x_columns) - set(X.columns))
-        lost_arr = np.zeros((X.shape[0], len(lost_columns)))
-        lost_df = pd.DataFrame(lost_arr, columns=lost_columns)
-        X = X.join(lost_df)
-
         res = []
-        for item in range(11):
-            hit_ratio = self.predict(clf, X, Y, item * 0.1)
-            res.append([item * 0.1 * 100, hit_ratio * 100])
+        for item in range(21):
+            hit_ratio = self.predict(clf, X, Y, item * 0.02)
+            res.append([item * 0.02 * 100, hit_ratio * 100])
 
         # 绘制误差与命中率的线性关系图
         arr = np.array(res)
@@ -56,7 +42,7 @@ class LinearRegressionModel(object):
         plt.plot(arr[:, 0], arr[:, 1], 'ro')  # 绘制点
         plt.xlabel('误差率(%)')
         plt.ylabel('命中率(%)')
-        plt.title('使用线性回归预测下一年人均年收入效果图')
+        plt.title('使用决策树回归预测下一年人均年收入效果图')
         plt.show()
 
     def get_classifier(self, X, Y):
@@ -65,7 +51,7 @@ class LinearRegressionModel(object):
         :param Y: 训练数据结果
         :return: 模型
         """
-        clf = LinearRegression()
+        clf = DecisionTreeRegressor()
         clf.fit(X, Y)
         return clf
 
@@ -84,6 +70,7 @@ class LinearRegressionModel(object):
                 hit += 1
 
         print 'Deviation: %d%%, Total: %d, Hit: %d, Precision: %.2f%%' % (100 * deviation, total, hit, 100.0*hit/total)
+
         # 用 A县 的模型去预测 B县 的结果
         # Deviation: 0%, Total: 40820, Hit: 0, Precision: 0.00%
         # Deviation: 10%, Total: 40820, Hit: 24418, Precision: 59.82%
@@ -104,8 +91,7 @@ class LinearRegressionModel(object):
         session = get_db_session()
         objs = session.query(Pinkunhu2015).filter(
                 Pinkunhu2015.county == 'A县', Pinkunhu2015.ny_person_income != -1,
-                Pinkunhu2015.person_year_total_income > 0, Pinkunhu2015.person_year_total_income < 7000,
-                Pinkunhu2015.ny_person_income > 0, Pinkunhu2015.ny_person_income < 7000,
+                Pinkunhu2015.person_year_total_income > 100, Pinkunhu2015.person_year_total_income < 5000,
         ).all()
         X, Y = [], []
         for item in objs:
@@ -127,14 +113,6 @@ class LinearRegressionModel(object):
         # df = df.groupby('person_year_total_income').filter(lambda x: len(x) > 5)
         # print '#df.shape:', df.shape
         # X, Y = df.loc[:, self.features[:-1]], df.loc[:, self.target]
-        # 设置虚拟变量
-        df = pd.DataFrame(X, columns=self.features)
-        for item in self.dummy_features:
-            dummies = pd.get_dummies(df[item], prefix=item)
-            df = df.join(dummies)
-        # 删除已设置虚拟变量的原变量
-        df = df.drop(self.dummy_features, axis=1)
-        X = df.loc[:]
 
         return X, Y
 
@@ -143,8 +121,7 @@ class LinearRegressionModel(object):
         session = get_db_session()
         objs = session.query(Pinkunhu2015).filter(
                 Pinkunhu2015.county == 'B县', Pinkunhu2015.ny_person_income != -1,
-                Pinkunhu2015.person_year_total_income > 0, Pinkunhu2015.person_year_total_income < 7000,
-                Pinkunhu2015.ny_person_income > 0, Pinkunhu2015.ny_person_income < 7000,
+                Pinkunhu2015.person_year_total_income > 100, Pinkunhu2015.person_year_total_income < 5000,
         ).all()
         X, Y = [], []
         for item in objs:
@@ -156,18 +133,9 @@ class LinearRegressionModel(object):
             normalized_value = normalize(self.target, getattr(item, self.target))
             Y.append(normalized_value)
 
-        # 设置虚拟变量
-        df = pd.DataFrame(X, columns=self.features)
-        for item in self.dummy_features:
-            dummies = pd.get_dummies(df[item], prefix=item)
-            df = df.join(dummies)
-        # 删除已设置虚拟变量的原变量
-        df = df.drop(self.dummy_features, axis=1)
-        X = df.loc[:]
-
         return X, Y
 
 
 if __name__ == '__main__':
-    m = LinearRegressionModel()
+    m = DecisionTreeRegressionModel()
     m.run()

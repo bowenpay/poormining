@@ -112,7 +112,7 @@ def normalize(key, value):
 def get_normalized_data():
     """ 获取格式化后的数据 """
     session = get_db_session()
-    objs = session.query(Pinkunhu2015).filter(Pinkunhu2015.county == '镇雄县').all()
+    objs = session.query(Pinkunhu2015).filter(Pinkunhu2015.county == 'A县').all()
     X, Y = [], []
     for item in objs:
         col_list = []
@@ -136,7 +136,7 @@ def get_normalized_data():
 def get_test_normalized_data():
     """ 获取格式化后的数据 """
     session = get_db_session()
-    objs = session.query(Pinkunhu2015).filter(Pinkunhu2015.county == '陆良县').all()
+    objs = session.query(Pinkunhu2015).filter(Pinkunhu2015.county == 'B县').all()
     X, Y = [], []
     for item in objs:
         col_list = []

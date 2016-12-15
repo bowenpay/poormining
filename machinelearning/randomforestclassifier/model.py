@@ -14,9 +14,9 @@ class RandomForestModel(object):
         'tv', 'washing_machine', 'fridge',
         'reason', 'is_danger_house', 'is_back_poor', 'is_debt', 'standard',
         'arable_land', 'debt_total', 'living_space', 'member_count',
-        #'person_year_total_income', 'year_total_income',
+        'person_year_total_income', 'year_total_income',
         'subsidy_total', 'wood_land', 'xin_nong_he_total', 'xin_yang_lao_total',
-        'call_number', 'bank_name', 'bank_number', 'help_plan'
+        'call_number', 'bank_number', 'help_plan'
     ]
     # 验证的目标
     target = 'poor_status'

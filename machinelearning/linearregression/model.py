@@ -84,7 +84,7 @@ class LinearRegressionModel(object):
                 hit += 1
 
         print 'Deviation: %d%%, Total: %d, Hit: %d, Precision: %.2f%%' % (100 * deviation, total, hit, 100.0*hit/total)
-        # 用 镇雄县 的模型去预测 陆良县 的结果
+        # 用 A县 的模型去预测 B县 的结果
         # Deviation: 0%, Total: 40820, Hit: 0, Precision: 0.00%
         # Deviation: 10%, Total: 40820, Hit: 24418, Precision: 59.82%
         # Deviation: 20%, Total: 40820, Hit: 32935, Precision: 80.68%

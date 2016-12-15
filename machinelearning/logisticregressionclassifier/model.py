@@ -55,7 +55,7 @@ class LogisticRegressionModel(object):
                 hit += 1
 
         print 'Total: %d, Hit: %d, Precision: %.2f%%' % (total, hit, 100.0*hit/total)
-        # 用 镇雄县 的模型去预测 陆良县 的结果
+        # 用 A县 的模型去预测 B县 的结果
         # Total: 6769, Hit: 5295, Precision: 78.22%
 
         return hit * 1.0 / total
@@ -88,7 +88,7 @@ class LogisticRegressionModel(object):
     def _fetch_data(self):
         """ 获取建模数据 """
         session = get_db_session()
-        objs = session.query(Pinkunhu2015).filter(Pinkunhu2015.county == '镇雄县').all()
+        objs = session.query(Pinkunhu2015).filter(Pinkunhu2015.county == 'A县').all()
         X, Y = [], []
         for item in objs:
             col_list = []
@@ -104,7 +104,7 @@ class LogisticRegressionModel(object):
     def _fetch_test_data(self):
         """ 获取测试数据 """
         session = get_db_session()
-        objs = session.query(Pinkunhu2015).filter(Pinkunhu2015.county == '彝良县').all()
+        objs = session.query(Pinkunhu2015).filter(Pinkunhu2015.county == 'B县').all()
         X, Y = [], []
         for item in objs:
             col_list = []

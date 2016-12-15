@@ -68,7 +68,7 @@ class LassoModel(object):
                 hit += 1
 
         print 'Deviation: %d%%, Total: %d, Hit: %d, Precision: %.2f%%' % (100 * deviation, total, hit, 100.0*hit/total)
-        # 用 镇雄县 的模型去预测 陆良县 的结果
+        # 用 A县 的模型去预测 B县 的结果
         # Deviation: 0%, Total: 40820, Hit: 0, Precision: 0.00%
         # Deviation: 10%, Total: 40820, Hit: 24513, Precision: 60.05%
         # Deviation: 20%, Total: 40820, Hit: 33011, Precision: 80.87%
@@ -87,7 +87,7 @@ class LassoModel(object):
         """ 获取建模数据 """
         session = get_db_session()
         objs = session.query(Pinkunhu2015).filter(
-                Pinkunhu2015.county == '镇雄县', Pinkunhu2015.ny_person_income != -1,
+                Pinkunhu2015.county == 'A县', Pinkunhu2015.ny_person_income != -1,
                 Pinkunhu2015.person_year_total_income > 0, Pinkunhu2015.person_year_total_income < 7000,
         ).all()
         X, Y = [], []
@@ -106,7 +106,7 @@ class LassoModel(object):
         """ 获取测试数据 """
         session = get_db_session()
         objs = session.query(Pinkunhu2015).filter(
-                Pinkunhu2015.county == '彝良县', Pinkunhu2015.ny_person_income != -1,
+                Pinkunhu2015.county == 'B县', Pinkunhu2015.ny_person_income != -1,
                 Pinkunhu2015.person_year_total_income > 0, Pinkunhu2015.person_year_total_income < 7000,
         ).all()
         X, Y = [], []

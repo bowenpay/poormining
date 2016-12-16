@@ -22,14 +22,29 @@ class LinearRegressionModel(object):
     ]
     # 验证的目标
     target = 'ny_person_income'
+    # 虚拟标量
+    dummy_features = [
+        'tv', 'washing_machine', 'fridge',
+        'reason', 'is_danger_house', 'is_back_poor',  'is_debt', 'standard',
+        'call_number', 'bank_name', 'bank_number', 'help_plan'
+    ]
 
     def run(self):
         """ 运行 """
         # 获取数据
         X, Y = self._fetch_data()
         clf = self.get_classifier(X, Y)
+        print X.columns
+        print 'Best Coefficients:', clf.coef_
+        x_columns = X.columns
         # 测试
+        # 补齐X缺失的哑变量
         X, Y = self._fetch_test_data()
+        lost_columns = list(set(x_columns) - set(X.columns))
+        lost_arr = np.zeros((X.shape[0], len(lost_columns)))
+        lost_df = pd.DataFrame(lost_arr, columns=lost_columns)
+        X = X.join(lost_df)
+
         res = []
         for item in range(11):
             hit_ratio = self.predict(clf, X, Y, item * 0.1)
@@ -69,7 +84,7 @@ class LinearRegressionModel(object):
                 hit += 1
 
         print 'Deviation: %d%%, Total: %d, Hit: %d, Precision: %.2f%%' % (100 * deviation, total, hit, 100.0*hit/total)
-        # 用 镇雄县 的模型去预测 陆良县 的结果
+        # 用 A县 的模型去预测 B县 的结果
         # Deviation: 0%, Total: 40820, Hit: 0, Precision: 0.00%
         # Deviation: 10%, Total: 40820, Hit: 24418, Precision: 59.82%
         # Deviation: 20%, Total: 40820, Hit: 32935, Precision: 80.68%
@@ -88,8 +103,9 @@ class LinearRegressionModel(object):
         """ 获取建模数据 """
         session = get_db_session()
         objs = session.query(Pinkunhu2015).filter(
-                Pinkunhu2015.county == '镇雄县', Pinkunhu2015.ny_person_income != -1,
+                Pinkunhu2015.county == 'A县', Pinkunhu2015.ny_person_income != -1,
                 Pinkunhu2015.person_year_total_income > 0, Pinkunhu2015.person_year_total_income < 7000,
+                Pinkunhu2015.ny_person_income > 0, Pinkunhu2015.ny_person_income < 7000,
         ).all()
         X, Y = [], []
         for item in objs:
@@ -111,6 +127,14 @@ class LinearRegressionModel(object):
         # df = df.groupby('person_year_total_income').filter(lambda x: len(x) > 5)
         # print '#df.shape:', df.shape
         # X, Y = df.loc[:, self.features[:-1]], df.loc[:, self.target]
+        # 设置虚拟变量
+        df = pd.DataFrame(X, columns=self.features)
+        for item in self.dummy_features:
+            dummies = pd.get_dummies(df[item], prefix=item)
+            df = df.join(dummies)
+        # 删除已设置虚拟变量的原变量
+        df = df.drop(self.dummy_features, axis=1)
+        X = df.loc[:]
 
         return X, Y
 
@@ -118,8 +142,9 @@ class LinearRegressionModel(object):
         """ 获取测试数据 """
         session = get_db_session()
         objs = session.query(Pinkunhu2015).filter(
-                Pinkunhu2015.county == '彝良县', Pinkunhu2015.ny_person_income != -1,
+                Pinkunhu2015.county == 'B县', Pinkunhu2015.ny_person_income != -1,
                 Pinkunhu2015.person_year_total_income > 0, Pinkunhu2015.person_year_total_income < 7000,
+                Pinkunhu2015.ny_person_income > 0, Pinkunhu2015.ny_person_income < 7000,
         ).all()
         X, Y = [], []
         for item in objs:
@@ -130,6 +155,15 @@ class LinearRegressionModel(object):
             X.append(col_list)
             normalized_value = normalize(self.target, getattr(item, self.target))
             Y.append(normalized_value)
+
+        # 设置虚拟变量
+        df = pd.DataFrame(X, columns=self.features)
+        for item in self.dummy_features:
+            dummies = pd.get_dummies(df[item], prefix=item)
+            df = df.join(dummies)
+        # 删除已设置虚拟变量的原变量
+        df = df.drop(self.dummy_features, axis=1)
+        X = df.loc[:]
 
         return X, Y
 

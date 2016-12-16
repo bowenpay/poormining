@@ -42,7 +42,7 @@ class AdaBoostRegressorModel(object):
         plt.plot(arr[:, 0], arr[:, 1], 'ro')  # 绘制点
         plt.xlabel('误差率(%)')
         plt.ylabel('命中率(%)')
-        plt.title('使用Adaboost随机决策树回归预测下一年人均年收入效果图')
+        plt.title('使用Adaboost决策树回归预测下一年人均年收入效果图')
         plt.show()
 
     def get_classifier(self, X, Y):
@@ -52,7 +52,7 @@ class AdaBoostRegressorModel(object):
         :return: 模型
         """
         # rng = np.random.RandomState(1)
-        clf = AdaBoostRegressor(DecisionTreeRegressor())
+        clf = AdaBoostRegressor(DecisionTreeRegressor(criterion='mse'))
         clf.fit(X, Y)
         return clf
 
@@ -71,7 +71,7 @@ class AdaBoostRegressorModel(object):
                 hit += 1
 
         print 'Deviation: %d%%, Total: %d, Hit: %d, Precision: %.2f%%' % (100 * deviation, total, hit, 100.0*hit/total)
-        # 用 镇雄县 的模型去预测 陆良县 的结果
+        # 用 A县 的模型去预测 B县 的结果
         # Deviation: 0%, Total: 40820, Hit: 0, Precision: 0.00%
         # Deviation: 10%, Total: 40820, Hit: 24418, Precision: 59.82%
         # Deviation: 20%, Total: 40820, Hit: 32935, Precision: 80.68%
@@ -90,8 +90,9 @@ class AdaBoostRegressorModel(object):
         """ 获取建模数据 """
         session = get_db_session()
         objs = session.query(Pinkunhu2015).filter(
-                Pinkunhu2015.county == '镇雄县', Pinkunhu2015.ny_person_income != -1,
-                Pinkunhu2015.person_year_total_income > 0, Pinkunhu2015.person_year_total_income < 7000,
+                Pinkunhu2015.county == 'A县', Pinkunhu2015.ny_person_income != -1,
+                Pinkunhu2015.person_year_total_income > 300, Pinkunhu2015.person_year_total_income < 4000,
+            Pinkunhu2015.year_total_income < 15000
         ).all()
         X, Y = [], []
         for item in objs:
@@ -120,8 +121,9 @@ class AdaBoostRegressorModel(object):
         """ 获取测试数据 """
         session = get_db_session()
         objs = session.query(Pinkunhu2015).filter(
-                Pinkunhu2015.county == '彝良县', Pinkunhu2015.ny_person_income != -1,
-                Pinkunhu2015.person_year_total_income > 0, Pinkunhu2015.person_year_total_income < 7000,
+                Pinkunhu2015.county == 'B县', Pinkunhu2015.ny_person_income != -1,
+                Pinkunhu2015.person_year_total_income > 300, Pinkunhu2015.person_year_total_income < 4000,
+                Pinkunhu2015.year_total_income < 15000
         ).all()
         X, Y = [], []
         for item in objs:

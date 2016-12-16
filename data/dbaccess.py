@@ -6,19 +6,19 @@ from data.db import get_db_session, Pinkunhu2015
 
 MAPPINGS = {
   "tv": {
-    "彩色": 1,
+    "null": 1,
     "黑白": 2,
-    "null": 3
+    "彩色": 3
   },
   "washing_machine": {
-    "全自": 1,
+    "null": 1,
     "半自": 2,
-    "null": 3
+    "全自": 3
   },
   "fridge": {
-    "双门": 1,
+    "null": 1,
     "单门": 2,
-    "null": 3
+    "双门": 3
   },
   "reason": {
     "缺技术": 1,
@@ -36,9 +36,9 @@ MAPPINGS = {
     "null": 13
   },
   "is_danger_house": {
-    "null": 1,
-    "否": 2,
-    "是": 3
+    "是": 1,
+    "null": 2,
+    "否": 3
   },
   "is_back_poor": {
     "否": 1,
@@ -112,7 +112,7 @@ def normalize(key, value):
 def get_normalized_data():
     """ 获取格式化后的数据 """
     session = get_db_session()
-    objs = session.query(Pinkunhu2015).filter(Pinkunhu2015.county == '镇雄县').all()
+    objs = session.query(Pinkunhu2015).filter(Pinkunhu2015.county == 'A县').all()
     X, Y = [], []
     for item in objs:
         col_list = []
@@ -136,7 +136,7 @@ def get_normalized_data():
 def get_test_normalized_data():
     """ 获取格式化后的数据 """
     session = get_db_session()
-    objs = session.query(Pinkunhu2015).filter(Pinkunhu2015.county == '陆良县').all()
+    objs = session.query(Pinkunhu2015).filter(Pinkunhu2015.county == 'B县').all()
     X, Y = [], []
     for item in objs:
         col_list = []

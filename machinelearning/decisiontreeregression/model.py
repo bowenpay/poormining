@@ -33,8 +33,8 @@ class DecisionTreeRegressionModel(object):
         X, Y = self._fetch_test_data()
         res = []
         for item in range(21):
-            hit_ratio = self.predict(clf, X, Y, item * 0.02)
-            res.append([item * 0.02 * 100, hit_ratio * 100])
+            hit_ratio = self.predict(clf, X, Y, item * 0.1)
+            res.append([item * 0.1 * 100, hit_ratio * 100])
 
         # 绘制误差与命中率的线性关系图
         arr = np.array(res)

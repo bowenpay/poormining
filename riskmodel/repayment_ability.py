@@ -18,16 +18,16 @@ class RepaymentAbilityModel(object):
 
     ]
 
-    def run(self):
+    def run(self, year):
         """ 使用还款能力模型，计算得分，并保存到csv """
-        df = self._fetch_data()
+        df = self._fetch_data(year)
         df['score'] = 0.0
         # 依次计算每一行的得分
         for idx, row in df.iterrows():
             df.set_value(idx, 'score', self.get_score(row))
         # 打印，并存储得分
         print df
-        return df.to_csv('data/repayment_ability.csv', encoding='utf-8')
+        return df.to_csv('data/repayment_ability_%s.csv' % year, encoding='utf-8')
 
     def get_score(self, row):
         """ 计算每一个用户的得分 """
@@ -49,10 +49,10 @@ class RepaymentAbilityModel(object):
 
         return score
 
-    def _fetch_data(self):
+    def _fetch_data(self, year):
         """ 获取数据 """
         mysql_cn = MySQLdb.connect(host='localhost', port=3306,user='root', passwd='123456', db='binchuan_data', charset="utf8")
-        sql = "select %s from %s;" % (", ".join(self.features), 'yunnan_all_pinkunhu_2016')
+        sql = "select %s from yunnan_all_pinkunhu_%s;" % (", ".join(self.features), year)
         df = pd.read_sql(sql, con=mysql_cn)
         return df
 
@@ -73,4 +73,4 @@ class RepaymentAbilityModel(object):
 
 if __name__ == '__main__':
     m = RepaymentAbilityModel()
-    m.run()
+    m.run(2016)
